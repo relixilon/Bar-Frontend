@@ -2,56 +2,74 @@
   <div class="main">
     <h1>{{ bar }}</h1>
     <div class="inputs">
-      <input type="Date" v-model="date" v-on:change="getData(date)" />
+      <input type="Date" v-model="date" @change="getData()" />
       <div class="amount">
         <span>Caja</span>
         <input type="number" v-model="amount">
       </div>
       <button v-on:click="submit">Submit</button>
     </div>
+    <span>Notes</span>
+    <textarea v-model="notes" name="" id="" cols="30" rows="10"></textarea>
+    <image-upload :bar="bar" :date="date"></image-upload>
+
   </div>
 </template>
 
 <script>
-import axios from "axios"
+import imageUpload from "./imageUpload.vue"
+import postToDB from "../services/postToDB"
+import getFromDB from "../services/getFromDB"
 export default {
   name: "mainPage",
+  components: {
+    imageUpload
+  },
   data() {
     return {
       bar: 'Bro',
       amount: 0,
-      date: new Date().toISOString().slice(0, 10)
+      date: new Date().toISOString().slice(0, 10),
+      notes: '',
     }
   },
 
   mounted() {
-    let url = "http://127.0.0.1:3000/api/getDate/" + this.date + "/" + this.bar
-    axios.get(url).then((res) => {
-      this.amount = res.data[0]?.amount
-
-    })
+    getFromDB.day(this.date, this.bar)
+      .then((res) => {
+        this.amount = res.data.amount ? res.data.amount : 0
+        this.notes = res.data.notes ? res.data.notes : ''
+      },
+        error => {
+          console.log(error);
+        }
+      );
   },
-
   methods: {
     submit() {
-      axios
-        .post("http://127.0.0.1:3000/api/post", {
-          bar: this.bar,
-          date: this.date,
-          amount: this.amount,
-        }).then((res) => {
-          console.log(res.data)
-        })
+      postToDB.day(this.date, this.bar, this.amount, this.notes)
+        .then((res) => {
+          console.log(res)
+        },
+          error => {
+            console.log(error);
+          }
+        );
     },
-    getData(date) {
-      let url = "http://127.0.0.1:3000/api/getDate/" + date + "/" + this.bar
-      axios.get(url).then((res) => {
-        this.amount = res.data[0]?.amount
-      })
-
-    }
+    getData() {
+      getFromDB.day(this.date, this.bar)
+        .then((res) => {
+          this.amount = res.data.amount ? res.data.amount : 0
+          this.notes = res.data.notes ? res.data.notes : ''
+        },
+          error => {
+            console.log(error);
+          }
+        );
+    },
   }
-};
+}
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -60,7 +78,6 @@ export default {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 30vh;
   justify-content: space-around;
 }
 
@@ -82,3 +99,4 @@ export default {
   width: 10vh;
 }
 </style>
+

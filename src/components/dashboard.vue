@@ -38,10 +38,10 @@ export default {
   },
   mounted() {
     axios
-      .get("http://127.0.0.1:3000/api/getAll", {
+      .get("http://192.168.1.13:3000/api/getAll", {
       }).then((res) => {
+        console.log(res)
         this.data = res.data
-        console.log(this.data[0].bar)
       })
   },
   methods: {
