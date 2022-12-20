@@ -1,4 +1,5 @@
 <template>
+  <navBar />
   <h1>
     Dashboard
   </h1>
@@ -22,9 +23,13 @@
 </template>
 
 <script>
+import navBar from "./nav.vue"
 import axios from "axios"
 export default {
   name: "dashboardPage",
+  components: {
+    navBar
+  },
   data() {
     return {
       data: []

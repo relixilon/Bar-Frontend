@@ -1,71 +1,71 @@
 <template>
+  <nav-bar />
   <div class="main">
-    <h1>{{ bar }}</h1>
     <div class="inputs">
-      <input type="Date" v-model="date" @change="getData()" />
+      <input type="Date" v-model="this.$store.state.date" @change="getData()" />
       <div class="amount">
         <span>Caja</span>
         <input type="number" v-model="amount">
       </div>
-      <button v-on:click="submit">Submit</button>
     </div>
     <span>Notes</span>
     <textarea v-model="notes" name="" id="" cols="30" rows="10"></textarea>
-    <image-upload :bar="bar" :date="date"></image-upload>
-
+    <button v-on:click="submit">Submit</button>
+    <image-upload></image-upload>
+    <div class="imageWrap">
+      <img class="image" v-for="image in this.$store.state.day.images" :key="image._id"
+        :src="('data:image/png;base64,' + image)" :alt="image.date" />
+    </div>
   </div>
 </template>
 
 <script>
 import imageUpload from "./imageUpload.vue"
 import postToDB from "../services/postToDB"
-import getFromDB from "../services/getFromDB"
+import navBar from "./nav.vue"
 export default {
   name: "mainPage",
   components: {
-    imageUpload
+    imageUpload,
+    navBar
   },
   data() {
     return {
-      bar: 'Bro',
       amount: 0,
-      date: new Date().toISOString().slice(0, 10),
       notes: '',
+      images: '',
     }
   },
 
-  mounted() {
-    getFromDB.day(this.date, this.bar)
-      .then((res) => {
-        this.amount = res.data.amount ? res.data.amount : 0
-        this.notes = res.data.notes ? res.data.notes : ''
-      },
-        error => {
-          console.log(error);
-        }
-      );
+  beforeCreate() {
+    this.$store.dispatch('getDay').then(() => {
+      this.amount = this.$store.state.day.amount
+      this.notes = this.$store.state.day.notes
+      this.images = this.$store.state.day.images
+    })
+
+
   },
   methods: {
     submit() {
-      postToDB.day(this.date, this.bar, this.amount, this.notes)
-        .then((res) => {
-          console.log(res)
+      postToDB.day(this.$store.state.date, this.$store.state.currentBar, this.amount, this.notes)
+        .then(() => {
         },
           error => {
-            console.log(error);
+            if (error) {
+              alert('Error por favor intenta de nuevo')
+            }
+
           }
         );
     },
     getData() {
-      getFromDB.day(this.date, this.bar)
-        .then((res) => {
-          this.amount = res.data.amount ? res.data.amount : 0
-          this.notes = res.data.notes ? res.data.notes : ''
-        },
-          error => {
-            console.log(error);
-          }
-        );
+      this.$store.dispatch('getDay').then(() => {
+        this.amount = this.$store.state.day.amount
+        this.notes = this.$store.state.day.notes
+        this.images = this.$store.state.day.images
+      })
+
     },
   }
 }

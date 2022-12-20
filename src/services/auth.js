@@ -14,6 +14,20 @@ class auth {
       },
     });
   }
+  logout() {
+    return http.post("/auth/signout");
+  }
+
+  loginStatus() {
+    axios.defaults.withCredentials = true;
+    return http.get("/user/loginStatus", {
+      headers: {
+        crossDomain: true,
+        "Content-Type": "multipart/form-data",
+        'Access-Control-Allow-Credentials': true,
+      },
+    });
+  }
 }
 
 export default new auth();

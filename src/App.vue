@@ -3,11 +3,18 @@
 </template>
 
 <script>
-
+import auth from "./services/auth"
 
 export default {
   name: 'App',
   components: {
+  },
+  beforeCreate() {
+    auth.loginStatus().catch((err) => {
+      if (err.response.status === 403) {
+        this.$router.push('/login')
+      }
+    })
   }
 }
 </script>
@@ -19,6 +26,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

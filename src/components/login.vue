@@ -23,6 +23,7 @@ export default {
       try {
         auth.login(this.username, this.password).then((res) => {
           if (res) {
+            localStorage.setItem('userId', JSON.stringify(res.data.id))
             this.$router.push('/')
           }
         }

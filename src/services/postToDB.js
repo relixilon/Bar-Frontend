@@ -2,6 +2,20 @@ import axios from "axios";
 import http from "../http-common";
 
 class postToDB {
+  register(data) {
+    axios.defaults.withCredentials = true;
+    return http.post("/auth/register", {
+      username: data.username,
+      password: data.password,
+      bars: data.bars,
+      roles: data.role,
+      headers: {
+        crossDomain: true,
+        "Content-Type": "multipart/form-data",
+        'Access-Control-Allow-Credentials': true,
+      },
+    })
+  }
   day(date, bar, amount, notes) {
     axios.defaults.withCredentials = true;
     return http.post("/user/submitDay", {
