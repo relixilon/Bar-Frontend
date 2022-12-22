@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import getFromDB from '@/services/getFromDB'
+import postToDB from '@/services/postToDB'
 // Create a new store instance.
 export default createStore({
   state() {
@@ -12,6 +13,8 @@ export default createStore({
       currentBar: '',
       day: {},
       date: new Date().toISOString().slice(0, 10),
+      imagePreviews: [],
+      dashboard: {},
     }
   },
   mutations: {
@@ -27,11 +30,8 @@ export default createStore({
     setCurrentBar(state, bar) {
       state.currentBar = bar
     },
-    addImage(state, image) {
-      state.day.images.push(image)
-    },
-    setImageSrc(state, image) {
-      state.day.images.find((img) => img._id === image._id).src = image.src
+    addImagePreview(state, image) {
+      state.day.imagePreviews.push(image)
     },
 
     logOut(state) {
@@ -74,8 +74,28 @@ export default createStore({
         })
       })
     },
-
+    getDashboard({ dispatch, state }) {
+      let id = JSON.parse(localStorage.getItem('userId'))
+      return new Promise((resolve) => {
+        dispatch('getUser', id).then(() => {
+          getFromDB.dashboard(state.currentBar).then((res) => {
+            console.log(res.data)
+            resolve()
+          }
+          )
+        })
+      })
+    },
+    deleteImage({ commit, state }, id) {
+      return new Promise((resolve) => {
+        postToDB.deleteImage(id).then(() => {
+          commit('setImages', state.day.images.filter((img) => img._id !== id))
+          resolve()
+        })
+      })
+    }
   },
+
   getters: {
     currentBar(state) {
       return state.currentBar

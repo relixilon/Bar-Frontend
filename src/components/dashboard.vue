@@ -24,7 +24,6 @@
 
 <script>
 import navBar from "./nav.vue"
-import axios from "axios"
 export default {
   name: "dashboardPage",
   components: {
@@ -41,14 +40,12 @@ export default {
     }
 
   },
-  mounted() {
-    axios
-      .get("http://192.168.1.13:3000/api/getAll", {
-      }).then((res) => {
-        console.log(res)
-        this.data = res.data
-      })
+  beforeCreate() {
+    this.$store.dispatch('getDashboard').then(() => {
+      this.data = this.$store.state.data
+    })
   },
+
   methods: {
     updated(item) {
       item.updated = true

@@ -71,6 +71,19 @@ class getFromDB {
       },
     });
   }
+  dashboard(bar) {
+    axios.defaults.withCredentials = true;
+    return http.get("/user/dashboard", {
+      params: {
+        bar: bar,
+      },
+      headers: {
+        crossDomain: true,
+        "Content-Type": "multipart/form-data",
+        'Access-Control-Allow-Credentials': true,
+      },
+    });
+  }
 }
 
 

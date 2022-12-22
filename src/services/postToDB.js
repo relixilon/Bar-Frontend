@@ -48,6 +48,17 @@ class postToDB {
       },
     });
   }
+  deleteImage(id) {
+    axios.defaults.withCredentials = true;
+    return http.post("/user/deleteImage", {
+      id: id,
+      headers: {
+        crossDomain: true,
+        "Content-Type": "multipart/form-data",
+        'Access-Control-Allow-Credentials': true,
+      },
+    });
+  }
 
 }
 

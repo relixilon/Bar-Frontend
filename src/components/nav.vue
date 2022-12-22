@@ -7,9 +7,9 @@
       <li>
         <router-link class="link" to="/">Home</router-link>
       </li>
-      <li>
+      <!-- <li>
         <router-link class="link" to="/Dashboard">Dashboard</router-link>
-      </li>
+      </li> -->
       <li class="logout">
         <button v-on:click="logout()">LogOut</button>
       </li>

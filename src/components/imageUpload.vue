@@ -8,7 +8,6 @@
     <button @click="upload">
       Upload
     </button>
-    {{ images }}
   </div>
   <div v-if="imagePreview" class="imagePreview">
     <img class="image" :src="imagePreview" alt="Image Preview">
@@ -37,7 +36,7 @@ export default {
     upload() {
       postToDB.image(this.currentImage, this.$store.state.date, this.$store.state.currentBar)
         .then(() => {
-          this.$forceUpdate();
+          this.$store.commit('addImagePreview', this.currentImage)
         })
       this.currentImage = null
       this.imagePreview = null

@@ -13,8 +13,8 @@
     <button v-on:click="submit">Submit</button>
     <image-upload></image-upload>
     <div class="imageWrap">
-      <img class="image" v-for="image in this.$store.state.day.images" :key="image._id"
-        :src="('data:image/png;base64,' + image)" :alt="image.date" />
+      <img class="image" v-for="image in this.images" :key="image.id" :src="('data:image/png;base64,' + image.img)"
+        :alt="image.id" v-on:click="imageOptions(image.id)" />
     </div>
   </div>
 </template>
@@ -39,7 +39,7 @@ export default {
 
   beforeCreate() {
     this.$store.dispatch('getDay').then(() => {
-      this.amount = this.$store.state.day.amount
+      this.amount = this.$store.state.day.amount ? this.$store.state.day.amount : 0
       this.notes = this.$store.state.day.notes
       this.images = this.$store.state.day.images
     })
@@ -65,8 +65,13 @@ export default {
         this.notes = this.$store.state.day.notes
         this.images = this.$store.state.day.images
       })
-
     },
+    imageOptions(image) {
+      if (confirm('Eliminar imagen?')) {
+        this.$store.dispatch('deleteImage', image)
+        this.images = this.images.filter(img => img.id !== image)
+      }
+    }
   }
 }
 
