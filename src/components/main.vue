@@ -3,13 +3,13 @@
   <div class="main">
     <div class="inputs">
       <input type="Date" v-model="this.$store.state.date" @change="getData()" />
-      <div class="amount">
-        <span>Caja</span>
-        <input type="number" v-model="amount">
+      <div class="amount" v-for="amount in amounts" :key="amount._id">
+        <span>{{ amount.label }}</span>
+        <input type="number" :value="amount.value" :id="amount.label" @change="updateAmount">
       </div>
     </div>
     <span>Notes</span>
-    <textarea v-model="notes" name="" id="" cols="30" rows="10"></textarea>
+    <textarea :value="notes" name="" id="" cols="30" rows="10" @change="updateNotes"></textarea>
     <button v-on:click="submit">Submit</button>
     <image-upload></image-upload>
     <div class="imageWrap">
@@ -29,26 +29,37 @@ export default {
     imageUpload,
     navBar
   },
-  data() {
-    return {
-      amount: 0,
-      notes: '',
-      images: '',
-    }
+
+  computed: {
+    bar() {
+      return this.$store.state.currentBar
+    },
+    amounts() {
+      return this.$store.state.day.amounts
+    },
+    notes() {
+      return this.$store.state.day.notes
+    },
+    images() {
+      return this.$store.state.day.images
+    },
   },
 
   beforeCreate() {
-    this.$store.dispatch('getDay').then(() => {
-      this.amount = this.$store.state.day.amount ? this.$store.state.day.amount : 0
-      this.notes = this.$store.state.day.notes
-      this.images = this.$store.state.day.images
-    })
-
-
+    this.$store.dispatch('getDay')
   },
   methods: {
+    updateAmount(e) {
+      this.$store.commit('setAmount', {
+        value: e.target.value,
+        label: e.target.id
+      })
+    },
+    updateNotes(e) {
+      this.$store.commit('setNotes', e.target.value)
+    },
     submit() {
-      postToDB.day(this.$store.state.date, this.$store.state.currentBar, this.amount, this.notes)
+      postToDB.day(this.$store.state.date, this.$store.state.currentBar, this.$store.state.day.amounts, this.$store.state.day.notes)
         .then(() => {
         },
           error => {
@@ -60,16 +71,13 @@ export default {
         );
     },
     getData() {
-      this.$store.dispatch('getDay').then(() => {
-        this.amount = this.$store.state.day.amount
-        this.notes = this.$store.state.day.notes
-        this.images = this.$store.state.day.images
-      })
+      this.$store.dispatch('getDay')
     },
     imageOptions(image) {
       if (confirm('Eliminar imagen?')) {
-        this.$store.dispatch('deleteImage', image)
-        this.images = this.images.filter(img => img.id !== image)
+        this.$store.dispatch('deleteImage', image).then(() => {
+          this.$store.dispatch('getDay')
+        })
       }
     }
   }
@@ -102,6 +110,19 @@ export default {
 
 .amount input {
   width: 10vh;
+}
+
+.imageWrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 60vw;
+}
+
+.image {
+  width: 30vw;
+  height: 30vw;
 }
 </style>
 

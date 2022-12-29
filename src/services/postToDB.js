@@ -16,14 +16,14 @@ class postToDB {
       },
     })
   }
-  day(date, bar, amount, notes) {
+  day(date, bar, amounts, notes) {
+    console.log(amounts)
     axios.defaults.withCredentials = true;
     return http.post("/user/submitDay", {
       date: date,
       bar: bar,
       notes: notes,
-      amount: amount,
-
+      amounts: amounts,
       headers: {
         crossDomain: true,
         "Content-Type": "multipart/form-data",
@@ -59,7 +59,5 @@ class postToDB {
       },
     });
   }
-
 }
-
 export default new postToDB();

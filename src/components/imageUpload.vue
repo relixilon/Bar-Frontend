@@ -1,7 +1,7 @@
 <template>
   <div>
     <label>
-      <input type="file" accept="image/*" ref="file" @change="selectImage">
+      <input type="file" multiple accept="image/*" ref="file" @change="selectImage">
     </label>
   </div>
   <div>
@@ -9,8 +9,8 @@
       Upload
     </button>
   </div>
-  <div v-if="imagePreview" class="imagePreview">
-    <img class="image" :src="imagePreview" alt="Image Preview">
+  <div v-for="image in imagePreview" :key="image" class="imageWrap">
+    <img class="image" :src="image" alt="Image Preview">
   </div>
 
 </template>
@@ -19,35 +19,32 @@
 import postToDB from '../services/postToDB'
 export default {
   name: 'ImageUpload',
-  props: {
-    images: Array
-  },
   data() {
     return {
-      currentImage: null,
-      imagePreview: null,
+      selectedImages: [],
+      imagePreview: []
     }
   },
   methods: {
     selectImage() {
-      this.currentImage = this.$refs.file.files.item(0)
-      this.imagePreview = URL.createObjectURL(this.currentImage)
+      this.selectedImages = this.$refs.file.files
+      for (let i = 0; i < this.selectedImages.length; i++) {
+        this.imagePreview.push(URL.createObjectURL(this.selectedImages[i]))
+      }
     },
     upload() {
-      postToDB.image(this.currentImage, this.$store.state.date, this.$store.state.currentBar)
-        .then(() => {
-          this.$store.commit('addImagePreview', this.currentImage)
-        })
-      this.currentImage = null
+      for (let i = 0; i < this.selectedImages.length; i++) {
+        postToDB.image(this.selectedImages[i], this.$store.state.date, this.$store.state.currentBar)
+      }
+      this.$store.dispatch('getDay')
+      this.selectedImages = null
       this.imagePreview = null
-
     },
   }
-
 }
 </script>
 
-<style>
+<style scoped>
 .image {
   width: 20vw;
   height: 20vw;
@@ -58,5 +55,6 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  width: 60vw;
 }
 </style>

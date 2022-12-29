@@ -21,6 +21,19 @@ export default createStore({
     setUser(state, user) {
       state.user = user
     },
+    setAmounts(state, amount) {
+      state.day.amounts = amount
+    },
+    setAmount(state, data) {
+      state.day.amounts.map((item) => {
+        if (item.label === data.label) {
+          item.value = data.value
+        }
+      })
+    },
+    setNotes(state, notes) {
+      state.day.notes = notes
+    },
     setDay(state, day) {
       state.day = day
     },
@@ -39,7 +52,7 @@ export default createStore({
     }
   },
   actions: {
-    getUser({ commit }, id) {
+    getUser({ commit, state }, id) {
       return new Promise((resolve) => {
         getFromDB.user(id).then((res) => {
           commit('setUser',
@@ -49,7 +62,9 @@ export default createStore({
               roles: res.data.roles,
             }
           )
-          commit('setCurrentBar', res.data.bars[0].name)
+          if (state.currentBar === '') {
+            commit('setCurrentBar', res.data.bars[0].name)
+          }
           resolve()
         })
       })
@@ -61,12 +76,26 @@ export default createStore({
         dispatch('getUser', id).then(() => {
           getFromDB.day(state.date, state.currentBar).then((res) => {
             getFromDB.images(state.date, state.currentBar).then((images) => {
-              commit('setDay', {
-                bar: res.data.bar,
-                amount: res.data.amount,
-                notes: res.data.notes,
-                images: images.data.images,
-              })
+              if (res.data.message) {
+                commit('setDay', {
+                  bar: state.currentBar,
+                  amounts: [
+                    {
+                      label: 'Caja',
+                      value: 0,
+                    },
+                  ],
+                  notes: '',
+                  images: [],
+                })
+              } else {
+                commit('setDay', {
+                  bar: res.data.bar,
+                  amounts: res.data.amounts,
+                  notes: res.data.notes,
+                  images: images.data.images,
+                })
+              }
               resolve()
             }
             )
@@ -78,8 +107,7 @@ export default createStore({
       let id = JSON.parse(localStorage.getItem('userId'))
       return new Promise((resolve) => {
         dispatch('getUser', id).then(() => {
-          getFromDB.dashboard(state.currentBar).then((res) => {
-            console.log(res.data)
+          getFromDB.dashboard(state.currentBar).then(() => {
             resolve()
           }
           )

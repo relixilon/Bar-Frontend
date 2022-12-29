@@ -1,15 +1,10 @@
 <template>
   <nav>
     <ul>
-      <li>
-        {{ bar }}
+      <li class="link" :class="{ active: activeBar(bar.name) }" v-for="bar in this.$store.state.user.bars" :key="bar.id"
+        v-on:click="changeBar(bar)">
+        {{ bar.name }}
       </li>
-      <li>
-        <router-link class="link" to="/">Home</router-link>
-      </li>
-      <!-- <li>
-        <router-link class="link" to="/Dashboard">Dashboard</router-link>
-      </li> -->
       <li class="logout">
         <button v-on:click="logout()">LogOut</button>
       </li>
@@ -27,14 +22,6 @@ export default {
       bar: this.$store.state.currentBar
     }
   },
-
-  watch: {
-    bar1(newValue, oldValue) {
-      console.log(oldValue)
-      this.bar1 = newValue
-      console.log(this.bar1)
-    }
-  },
   beforeMount() {
     let id = JSON.parse(localStorage.getItem('userId'))
     this.$store.dispatch('getUser', id).then(() => {
@@ -48,6 +35,13 @@ export default {
         this.$store.commit('logOut')
         this.$router.push('/login')
       })
+    },
+    activeBar(bar) {
+      return bar === this.$store.state.currentBar
+    },
+    changeBar(bar) {
+      this.$store.commit('setCurrentBar', bar.name)
+      this.$store.dispatch('getDay')
     }
   }
 }
@@ -77,6 +71,10 @@ li {
   color: white;
 }
 
+li:hover {
+  cursor: pointer;
+}
+
 .logout {
   margin-left: auto;
   margin-right: 4vw;
@@ -94,5 +92,9 @@ li {
   color: white;
   text-decoration: none;
   margin-left: 2vw;
+}
+
+.active {
+  color: #4CAF50;
 }
 </style>
