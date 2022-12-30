@@ -17,8 +17,8 @@
         <div v-for="image in this.images" :key="image.id">
           <img class="image" :class="{ magnify: image.magnify }" :src="('data:image/png;base64,' + image.img)"
             :alt="image.id" v-on:click="magnifyImage(image.id)" />
+          <button class="deleteButton" @click="imageOptions(image.id)">Borrar</button>
           <div>
-            <button class="deleteButton" @click="imageOptions(image.id)">Borrar</button>
           </div>
         </div>
       </div>
@@ -133,15 +133,15 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: center;
-  width: 100vw;
+  max-width: 100vw;
+  gap: 4vh;
 }
 
 .submit {
-  margin: 2vh 0 3vh 0;
+  margin: 4vh 0 0 0;
 }
 
 .image {
-  margin-top: 10vh;
   width: 90vw;
 }
 
