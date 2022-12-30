@@ -27,4 +27,17 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
 </style>

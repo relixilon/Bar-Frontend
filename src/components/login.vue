@@ -1,10 +1,10 @@
 <template>
   <h1>Login</h1>
-  <div>
+  <form v-on:submit.prevent="submit()">
     <input type="text" v-model="username" placeholder="usuario">
     <input type="password" v-model="password" placeholder="contraseña">
     <button v-on:click="submit()">Login</button>
-  </div>
+  </form>
 
 </template>
 
@@ -37,6 +37,22 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+h1 {
+  text-align: center;
+}
 
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input {
+  margin: 10px;
+}
+
+button {
+  margin: 10px;
+}
 </style>

@@ -31,6 +31,14 @@ export default createStore({
         }
       })
     },
+    magnifyImage(state, image) {
+      let img = state.day.images.find((item) => item.id === image)
+      if (img) {
+        img.magnify = !img.magnify
+      } else {
+        img.magnify = true
+      }
+    },
     setNotes(state, notes) {
       state.day.notes = notes
     },

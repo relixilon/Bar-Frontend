@@ -1,21 +1,28 @@
 <template>
   <nav-bar />
-  <div class="main">
-    <div class="inputs">
-      <input type="Date" v-model="this.$store.state.date" @change="getData()" />
-      <div class="amount" v-for="amount in amounts" :key="amount._id">
-        <span>{{ amount.label }}</span>
-        <input type="number" :value="amount.value" :id="amount.label" @change="updateAmount">
+  <div>
+    <form class="main" v-on:submit.prevent="submit()">
+      <div class="inputs">
+        <input type="Date" v-model="this.$store.state.date" @change="getData()" />
+        <div class="amount" v-for="amount in amounts" :key="amount._id">
+          <span>{{ amount.label }}</span>
+          <input type="number" :value="amount.value" :id="amount.label" @change="updateAmount">
+        </div>
       </div>
-    </div>
-    <span>Notes</span>
-    <textarea :value="notes" name="" id="" cols="30" rows="10" @change="updateNotes"></textarea>
-    <button v-on:click="submit">Submit</button>
-    <image-upload></image-upload>
-    <div class="imageWrap">
-      <img class="image" v-for="image in this.images" :key="image.id" :src="('data:image/png;base64,' + image.img)"
-        :alt="image.id" v-on:click="imageOptions(image.id)" />
-    </div>
+      <span>Notes</span>
+      <textarea :value="notes" name="" id="" cols="30" rows="10" @change="updateNotes"></textarea>
+      <button class="submit" v-on:click="submit">Submit</button>
+      <image-upload></image-upload>
+      <div class="imageWrap">
+        <div v-for="image in this.images" :key="image.id">
+          <img class="image" :class="{ magnify: image.magnify }" :src="('data:image/png;base64,' + image.img)"
+            :alt="image.id" v-on:click="magnifyImage(image.id)" />
+          <div>
+            <button class="deleteButton" @click="imageOptions(image.id)">Borrar</button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -28,6 +35,11 @@ export default {
   components: {
     imageUpload,
     navBar
+  },
+  data: function () {
+    return {
+      magnify: false,
+    }
   },
 
   computed: {
@@ -79,6 +91,9 @@ export default {
           this.$store.dispatch('getDay')
         })
       }
+    },
+    magnifyImage(image) {
+      this.$store.commit('magnifyImage', image)
     }
   }
 }
@@ -92,6 +107,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  margin: 2vh 0 0 2vh;
 }
 
 .inputs {
@@ -114,15 +130,38 @@ export default {
 
 .imageWrap {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
   justify-content: center;
-  width: 60vw;
+  width: 100vw;
+}
+
+.submit {
+  margin: 2vh 0 3vh 0;
 }
 
 .image {
-  width: 30vw;
-  height: 30vw;
+  margin-top: 10vh;
+  width: 90vw;
+}
+
+.deleteButton {
+  margin: 0 0 0 2vw;
+  height: 5vh;
+  width: 10vw;
+  background-color: red;
+  color: white;
+  border: none;
+  font-size: 30px;
+}
+
+.magnify {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 </style>
 
