@@ -2,17 +2,27 @@
   <nav-bar />
   <div>
     <form class="main" v-on:submit.prevent="submit()">
+      <input class="date" type="Date" v-model="this.$store.state.date" @change="getData()" />
+      <h3>Ingresos</h3>
       <div class="inputs">
-        <input type="Date" v-model="this.$store.state.date" @change="getData()" />
         <div class="amount" v-for="amount in amounts" :key="amount._id">
-          <span>{{ amount.label }}</span>
-          <input type="number" :value="amount.value" :id="amount.label" @change="updateAmount">
+          <div class="amountLabel">
+            <span>{{ amount.label }}</span>
+          </div>
+          <input class="amountAmount" type="number" step="any" :value="amount.value" :id="amount.label"
+            @change="updateAmount" placeholder="0">
         </div>
+      </div>
+      <div class="newItem">
+        <input class="amountLabel" type="text" v-model="label" placeholder="Categoria">
+        <input class="amountAmount" type="number" v-model="value" placeholder="0">
+        <button @click="addCategory">Añadir</button>
+      </div>
+      <div>
       </div>
       <span>Notes</span>
       <textarea :value="notes" name="" id="" cols="30" rows="10" @change="updateNotes"></textarea>
       <button class="submit" v-on:click="submit">Submit</button>
-      <image-upload></image-upload>
       <div class="imageWrap">
         <div v-for="image in this.images" :key="image.id">
           <img class="image" :class="{ magnify: image.magnify }" :src="('data:image/png;base64,' + image.img)"
@@ -27,18 +37,18 @@
 </template>
 
 <script>
-import imageUpload from "./imageUpload.vue"
 import postToDB from "../services/postToDB"
 import navBar from "./nav.vue"
 export default {
   name: "mainPage",
   components: {
-    imageUpload,
     navBar
   },
   data: function () {
     return {
       magnify: false,
+      label: '',
+      value: '',
     }
   },
 
@@ -61,6 +71,14 @@ export default {
     this.$store.dispatch('getDay')
   },
   methods: {
+    addCategory() {
+      this.$store.commit('setAmount', {
+        label: this.label,
+        value: this.value,
+      })
+      this.value = null
+      this.label = ''
+    },
     updateAmount(e) {
       this.$store.commit('setAmount', {
         value: e.target.value,
@@ -106,25 +124,33 @@ export default {
   align-items: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  margin: 2vh 0 0 2vh;
+  width: 100vw;
+  margin-top: 2vh;
+  gap: 1vh;
 }
+
 
 .inputs {
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  height: 15vh;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 40vw;
+  gap: 1vw;
 }
 
 .amount {
   display: flex;
-  width: 20vw;
-  justify-content: space-around;
-  align-items: baseline;
+  flex-direction: row;
+  align-items: center;
+  gap: 1vw;
+
 }
 
-.amount input {
+.amountLabel {
+  width: 10vw;
+}
+
+.amountAmount {
   width: 10vh;
 }
 

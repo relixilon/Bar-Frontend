@@ -25,11 +25,15 @@ export default createStore({
       state.day.amounts = amount
     },
     setAmount(state, data) {
-      state.day.amounts.map((item) => {
-        if (item.label === data.label) {
-          item.value = data.value
-        }
-      })
+      let target = state.day.amounts.find((item) => item.label === data.label)
+      if (target) {
+        target.value = data.value
+      } else {
+        state.day.amounts.push(data)
+      }
+    },
+    setDashboard(state, data) {
+      state.dashboard = data
     },
     magnifyImage(state, image) {
       let img = state.day.images.find((item) => item.id === image)
@@ -111,17 +115,20 @@ export default createStore({
         })
       })
     },
-    getDashboard({ dispatch, state }) {
+
+    getDashboard({ dispatch, commit, state }) {
       let id = JSON.parse(localStorage.getItem('userId'))
       return new Promise((resolve) => {
         dispatch('getUser', id).then(() => {
-          getFromDB.dashboard(state.currentBar).then(() => {
+          getFromDB.dashboard(state.currentBar).then((res) => {
+            commit('setDashboard', res.data.data)
             resolve()
           }
           )
         })
       })
     },
+
     deleteImage({ commit, state }, id) {
       return new Promise((resolve) => {
         postToDB.deleteImage(id).then(() => {

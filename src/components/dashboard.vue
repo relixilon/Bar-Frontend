@@ -1,25 +1,27 @@
 <template>
   <navBar />
-  <h1>
-    Dashboard
-  </h1>
-  <ul class="data">
-    <li v-for="item in data" :key="item.id" :class="{ updated: item.updated }">
-      <ul class="item">
-        <li>{{ item.bar }}</li>
-        <li>
-          <input type="number" v-model="item.amount" v-on:change="updated(item)">
-        </li>
-        <li>
-          {{ item.date }}
-          {{ item.updated }}
-        </li>
+  <div class="card">
+    <ul class="data" v-for="day in data" :key="day.weekDay">
+      <li class="title">
+        <h3>
+          {{ day.weekDay }}
+        </h3>
+      </li>
+      <li class="item">
+        <span>Media</span>
+        <span>{{ day.average }}</span>
+      </li>
+      <li class="item">
+        <span>Maximo</span>
+        <span>{{ day.max }}</span>
+      </li>
+      <li class="item">
+        <span>Minimo</span>
+        <span>{{ day.min }}</span>
+      </li>
+    </ul>
+  </div>
 
-      </ul>
-    </li>
-  </ul>
-
-  <button v-on:click="submit">Save</button>
 </template>
 
 <script>
@@ -29,52 +31,40 @@ export default {
   components: {
     navBar
   },
-  data() {
-    return {
-      data: []
-    }
-  },
   computed: {
-    amount(id) {
-      return this.data.find(element => element._id = id).amount
+    data() {
+      return this.$store.state.dashboard
     }
 
   },
   beforeCreate() {
-    this.$store.dispatch('getDashboard').then(() => {
-      this.data = this.$store.state.data
-    })
-  },
-
-  methods: {
-    updated(item) {
-      item.updated = true
-    }
-
+    this.$store.dispatch('getDashboard')
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.card {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2vw;
+  margin: 2vw;
+}
+
 .data {
+  padding: 1vw 2vw 1vw 2vw;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
   list-style: none;
+  width: 30vw;
 }
 
 .item {
   display: flex;
-  flex-direction: row;
-  list-style: none;
-  margin: 2vh 0 0 0;
-  width: 70vw;
-  justify-content: space-around;
-}
-
-.item li {
-  width: 10vw;
-}
-
-.updated {
-  color: red;
+  gap: 2vw;
+  align-items: center;
 }
 </style>

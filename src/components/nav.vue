@@ -5,6 +5,13 @@
         v-on:click="changeBar(bar)">
         {{ bar.name }}
       </li>
+      <li class="separator"></li>
+      <li>
+        <router-link class="link" active-class="active" to="/">Home</router-link>
+      </li>
+      <li>
+        <router-link class="link" active-class="active" to="/dashboard">Dashboard</router-link>
+      </li>
       <li class="logout">
         <button v-on:click="logout()">LogOut</button>
       </li>
@@ -42,6 +49,8 @@ export default {
     changeBar(bar) {
       this.$store.commit('setCurrentBar', bar.name)
       this.$store.dispatch('getDay')
+      this.$store.dispatch('getDashboard')
+
     }
   }
 }
@@ -96,5 +105,11 @@ li:hover {
 
 .active {
   color: #4CAF50;
+}
+
+.separator {
+  border-left: 2px solid white;
+  height: 3vh;
+  margin-left: 2vw;
 }
 </style>
