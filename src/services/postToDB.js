@@ -17,7 +17,6 @@ class postToDB {
     })
   }
   day(date, bar, amounts, notes) {
-    console.log(amounts)
     axios.defaults.withCredentials = true;
     return http.post("/user/submitDay", {
       date: date,

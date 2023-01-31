@@ -20,7 +20,7 @@
       </div>
       <div>
       </div>
-      <span>Notes</span>
+      <span>Notas</span>
       <textarea :value="notes" name="" id="" cols="30" rows="10" @change="updateNotes"></textarea>
       <button class="submit" v-on:click="submit">Submit</button>
       <div class="imageWrap">

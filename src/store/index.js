@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
 import getFromDB from '@/services/getFromDB'
-import postToDB from '@/services/postToDB'
+//import postToDB from '@/services/postToDB'
 // Create a new store instance.
 export default createStore({
   state() {
@@ -35,28 +35,16 @@ export default createStore({
     setDashboard(state, data) {
       state.dashboard = data
     },
-    magnifyImage(state, image) {
-      let img = state.day.images.find((item) => item.id === image)
-      if (img) {
-        img.magnify = !img.magnify
-      } else {
-        img.magnify = true
-      }
-    },
+
     setNotes(state, notes) {
       state.day.notes = notes
     },
     setDay(state, day) {
       state.day = day
     },
-    setImages(state, images) {
-      state.day.images = images
-    },
+
     setCurrentBar(state, bar) {
       state.currentBar = bar
-    },
-    addImagePreview(state, image) {
-      state.day.imagePreviews.push(image)
     },
 
     logOut(state) {
@@ -87,31 +75,10 @@ export default createStore({
       return new Promise((resolve) => {
         dispatch('getUser', id).then(() => {
           getFromDB.day(state.date, state.currentBar).then((res) => {
-            getFromDB.images(state.date, state.currentBar).then((images) => {
-              if (res.data.message) {
-                commit('setDay', {
-                  bar: state.currentBar,
-                  amounts: [
-                    {
-                      label: 'Caja',
-                      value: 0,
-                    },
-                  ],
-                  notes: '',
-                  images: [],
-                })
-              } else {
-                commit('setDay', {
-                  bar: res.data.bar,
-                  amounts: res.data.amounts,
-                  notes: res.data.notes,
-                  images: images.data.images,
-                })
-              }
-              resolve()
-            }
-            )
-          })
+            commit('setDay', res.data)
+            resolve()
+          }
+          )
         })
       })
     },
@@ -128,15 +95,6 @@ export default createStore({
         })
       })
     },
-
-    deleteImage({ commit, state }, id) {
-      return new Promise((resolve) => {
-        postToDB.deleteImage(id).then(() => {
-          commit('setImages', state.day.images.filter((img) => img._id !== id))
-          resolve()
-        })
-      })
-    }
   },
 
   getters: {
